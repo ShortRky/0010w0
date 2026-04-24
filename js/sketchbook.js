@@ -179,41 +179,17 @@ class Sketchbook {
     }
 
     erase(x1, y1, x2, y2, size) {
-        const imageData = this.ctx.getImageData(
-            Math.max(0, x1 - size),
-            Math.max(0, y1 - size),
-            size * 2,
-            size * 2
-        );
-
-        // Bresenham line algorithm for eraser
-        const dx = Math.abs(x2 - x1);
-        const dy = Math.abs(y2 - y1);
-        const sx = x1 < x2 ? 1 : -1;
-        const sy = y1 < y2 ? 1 : -1;
-        let err = dx - dy;
-
-        let x = Math.floor(x1);
-        let y = Math.floor(y1);
-
-        while (true) {
-            const eraserRadius = size;
-            for (let px = x - eraserRadius; px < x + eraserRadius; px++) {
-                for (let py = y - eraserRadius; py < y + eraserRadius; py++) {
-                    if (px >= 0 && px < this.canvas.width && py >= 0 && py < this.canvas.height) {
-                        const index = (py * this.canvas.width + px) * 4;
-                        imageData.data[index + 3] = 0; // Set alpha to 0
-                    }
-                }
-            }
-
-            if (x === x2 && y === y2) break;
-            const e2 = 2 * err;
-            if (e2 > -dy) { err -= dy; x += sx; }
-            if (e2 < dx) { err += dx; y += sy; }
-        }
-
-        this.ctx.putImageData(imageData, Math.max(0, x1 - size), Math.max(0, y1 - size));
+        // Use composite operation for clean, performant erasing
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'destination-out';
+        this.ctx.beginPath();
+        this.ctx.lineWidth = size * 2;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.moveTo(x1, y1);
+        this.ctx.lineTo(x2, y2);
+        this.ctx.stroke();
+        this.ctx.restore();
     }
 
     clearCanvas() {
