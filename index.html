@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyHub - Advanced Learning Platform</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff88">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="particles"></div>
+        <canvas id="grid-canvas" class="grid-background"></canvas>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">StudyHub</h1>
+                <p class="tagline">Master advanced mathematics & sciences</p>
+            </div>
+            <div class="header-controls">
+                <button class="btn-icon" id="theme-toggle" title="Toggle theme">🌙</button>
+                <button class="btn-icon" id="help-btn" title="Help">❓</button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Left Panel: Problem Generator -->
+            <section class="problem-panel">
+                <div class="panel-header">
+                    <h2>Problem Generator</h2>
+                    <span class="icon-refresh">🔄</span>
+                </div>
+
+                <!-- Subject Selection -->
+                <div class="control-group">
+                    <label for="subject-select">Select Subject:</label>
+                    <select id="subject-select" class="select-input">
+                        <option value="">Choose a subject...</option>
+                        <option value="calculus-1">Calculus I: Limits & Derivatives</option>
+                        <option value="calculus-2">Calculus II: Integration & Series</option>
+                        <option value="calculus-3">Calculus III: Multivariable Calculus</option>
+                        <option value="differential-equations">Differential Equations</option>
+                        <option value="measure-theory">Measure Theory</option>
+                        <option value="chemistry">Chemistry: Molecular & Organic</option>
+                    </select>
+                </div>
+
+                <!-- Generate Problem Button -->
+                <button id="generate-btn" class="btn-primary">Generate Problem</button>
+
+                <!-- Problem Display -->
+                <div id="problem-container" class="problem-container">
+                    <div class="problem-placeholder">
+                        <p>Select a subject and click "Generate Problem" to begin</p>
+                    </div>
+                </div>
+
+                <!-- Multiple Choice Options -->
+                <div id="options-container" class="options-container" style="display: none;">
+                    <p class="options-label">Select your answer:</p>
+                    <div class="options-grid" id="options-grid"></div>
+                </div>
+
+                <!-- Solution Reveal -->
+                <div id="solution-container" class="solution-container" style="display: none;">
+                    <button id="reveal-solution-btn" class="btn-secondary">Reveal Step-by-Step Solution</button>
+                    <div id="solution-steps" class="solution-steps" style="display: none;"></div>
+                </div>
+
+                <!-- Feedback -->
+                <div id="feedback-container" class="feedback-container"></div>
+            </section>
+
+            <!-- Right Panel: Sketchbook -->
+            <section class="sketchbook-panel">
+                <div class="panel-header">
+                    <h2>Sketchbook</h2>
+                    <div class="sketch-controls-mini">
+                        <button class="btn-icon" id="download-sketch-btn" title="Download sketch">⬇️</button>
+                        <button class="btn-icon" id="clear-all-btn" title="Clear all">🗑️</button>
+                    </div>
+                </div>
+
+                <!-- Drawing Tools -->
+                <div class="drawing-tools">
+                    <div class="tool-group">
+                        <label>Tool:</label>
+                        <button class="tool-btn active" data-tool="pen" title="Pen (P)">✏️ Pen</button>
+                        <button class="tool-btn" data-tool="eraser" title="Eraser (E)">🧹 Eraser</button>
+                    </div>
+                    <div class="tool-group">
+                        <label>Color:</label>
+                        <input type="color" id="color-picker" value="#00ff88" title="Pick color">
+                        <div class="color-presets">
+                            <button class="color-btn" data-color="#00ff88" title="Cyan" style="background: #00ff88;"></button>
+                            <button class="color-btn" data-color="#ff0080" title="Pink" style="background: #ff0080;"></button>
+                            <button class="color-btn" data-color="#ffaa00" title="Orange" style="background: #ffaa00;"></button>
+                            <button class="color-btn" data-color="#00ff00" title="Green" style="background: #00ff00;"></button>
+                            <button class="color-btn" data-color="#ffffff" title="White" style="background: #ffffff;"></button>
+                        </div>
+                    </div>
+                    <div class="tool-group">
+                        <label>Size:</label>
+                        <input type="range" id="brush-size" min="1" max="50" value="3" class="size-slider">
+                        <span id="size-display">3px</span>
+                    </div>
+                </div>
+
+                <!-- Canvas -->
+                <canvas id="sketchbook-canvas" class="sketchbook-canvas"></canvas>
+
+                <!-- Text Overlay -->
+                <div class="text-overlay-container">
+                    <button id="add-text-btn" class="btn-secondary">+ Add Text</button>
+                    <div id="text-inputs" class="text-inputs"></div>
+                </div>
+
+                <!-- Notes History -->
+                <div class="sketch-info">
+                    <p id="sketch-status">Ready to draw...</p>
+                </div>
+            </section>
+        </div>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>How to Use StudyHub</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="help-section">
+                        <h3>🎯 Problem Generator</h3>
+                        <p>1. Select a subject from the dropdown menu</p>
+                        <p>2. Click "Generate Problem" to receive a random question</p>
+                        <p>3. Choose from 4 multiple choice options (1 correct, 3 incorrect)</p>
+                        <p>4. Click "Reveal Step-by-Step Solution" to see detailed explanation</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>📝 Sketchbook</h3>
+                        <p>• Use the pen tool to draw derivations and chemical structures</p>
+                        <p>• Switch tools with keyboard shortcuts: P for Pen, E for Eraser</p>
+                        <p>• Add text notes with the "Add Text" button</p>
+                        <p>• Download your sketches anytime with the download button</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>💾 Data Storage</h3>
+                        <p>All your sketches and problem history are saved locally in your browser.</p>
+                        <p>No internet connection required after first load!</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>⌨️ Keyboard Shortcuts</h3>
+                        <p><strong>P</strong> - Switch to Pen | <strong>E</strong> - Switch to Eraser</p>
+                        <p><strong>C</strong> - Clear Canvas | <strong>Z</strong> - Undo (last action)</p>
+                        <p><strong>S</strong> - Save Sketch | <strong>D</strong> - Download</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>StudyHub © 2026 | All data stored locally | Perfect for offline learning</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
